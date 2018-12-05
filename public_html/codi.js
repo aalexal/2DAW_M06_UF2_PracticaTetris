@@ -51,7 +51,6 @@ var Joc = {
 
 Joc.iniJoc();
 Joc.mostraEspai();
-
 document.write("<br>Test Seguent Pesa: <br>")
 for (var i = 0; i < 5; i++) {
     document.write(Joc.calcPesaSeg() + "<br>");
