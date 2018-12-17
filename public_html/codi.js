@@ -8,7 +8,7 @@ var Joc = {
     interval: 1000,
     nivell: 0,
     espai: new Array(),
-    
+
     //Funció que inicialitza el joc
     iniJoc: function () {
         this.puntJugador = 0;
@@ -41,6 +41,18 @@ var Joc = {
     //Funció que realitza el moviment automàtic del joc cada cert interval de temps
     movimentAutomaticJoc: function () {
         //setInterval
+        console.log(this.pesaVigent);
+        //console.log("Posició inicial Y :" + this.pesaVigent);
+        if ((this.pesaVigent.y >= 0) && (this.pesaVigent.y < 25)) {
+            this.pesaVigent.y += 1;
+        }
+        //console.log("Posició Y:" + this.pesaVigent.y);
+        
+        if(this.pesaVigent.y === 24){ //  ||la y seguent coincideix amb una pesa
+            //Parar pesa i que surti la seguent
+            this.pesaVigent = this.pesaVigent;
+            this.calcPesaSeg();
+        }
     }
 };
 
@@ -49,7 +61,7 @@ var Pesa = function (forma, color, x, y) {
     this.color = color;
     this.x = x;
     this.y = y;
-    
+
     this.rotarDreta = function () {
         var formaNova = new Array();
         for (var i = 0; i < this.forma.length; i++) {
@@ -60,22 +72,22 @@ var Pesa = function (forma, color, x, y) {
         }
         this.forma = formaNova;
     };
-    
+
     //Per rotar cap a l'esquerra, s'executa 3 cops el mètode per rotar cap a la dreta.
     this.rotarEsquerra = function () {
-        for(var i = 0; i < 3; i++){
+        for (var i = 0; i < 3; i++) {
             this.rotarDreta();
         }
     };
-    
+
     //Mètode per disminuir la posició x de la peça (moure la peça cap a la esquerra).
     //Si en disminuir la posició, no sobrepassa el límit de la matriu, es mourà.
     this.moureEsquerra = function () {
         if ((this.x - 1) >= 0) {
             this.x -= 1;
-        } 
+        }
     };
-    
+
     //Mètode per augmentar la posició x de la peça (moure la peça cap a la dreta).
     //Si en augmentar la posició, no sobrepassa el límit de la matriu, es mourà.
     this.moureDreta = function () {
@@ -83,7 +95,7 @@ var Pesa = function (forma, color, x, y) {
             this.x += 1;
         }
     };
-    
+
     this.getForma = function () {
         return this.forma;
     };
@@ -104,11 +116,12 @@ function GeneraPesaAleatoria() {
     //return peces[numeroAleatori];
 }
 
+//Joc
 Joc.iniJoc();
 console.log(Joc.pesaVigent);
-Joc.pesaVigent.moureDreta();
-console.log(Joc.pesaVigent);
-console.log(Joc.pesaVigent.getForma());
+//setInterval(Joc.movimentAutomaticJoc, Joc.interval);
 
-document.getElementById("mapa").innerHTML = Joc.mostraEspai();
-document.getElementById("puntuacions").innerHTML = Joc.mostraPuntuacions();
+//document.getElementById("mapa").innerHTML = Joc.mostraEspai();
+/*document.getElementById("mapa").innerHTML = ("<br>Puntuació: " + 
+        Joc.puntJugador + "<br>Puntuació Màxima: " + Joc.puntMaxJugador +
+        "<br>Nivell: " + Joc.nivell);*/
