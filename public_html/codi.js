@@ -5,10 +5,9 @@ var Joc = {
     pesaVigent: [],
     pesaSeguent: [],
     comptadorPeces: [i = 0, j = 0, l = 0, o = 0, s = 0, t = 0, z = 0],
-    interval: 1000,
+    interval: 100,
     nivell: 0,
     espai: new Array(),
-
     //Funció que inicialitza el joc
     iniJoc: function () {
         this.puntJugador = 0;
@@ -18,41 +17,78 @@ var Joc = {
         }
         this.pesaVigent = GeneraPesaAleatoria();
         this.calcPesaSeg();
+        this.mostraEspai();
+        this.mostraPuntuacions();
     },
     mostraPuntuacions: function () {
-        document.write("<br>Puntuació: " + this.puntJugador);
-        document.write("<br>Puntuació Màxima: " + this.puntMaxJugador);
-        document.write("<br>Nivell: " + this.nivell);
+        document.getElementById("puntuacions").innerHTML = ("<br>Puntuació: " +
+                Joc.puntJugador + "<br>Puntuació Màxima: " + Joc.puntMaxJugador +
+                "<br>Nivell: " + Joc.nivell);
     },
     //Funció encarregada de mostrar l'espai(mapa, puntuacions i nivell)
     mostraEspai: function () {
+        var canvas = document.getElementById("mapa");
+        var context = canvas.getContext("2d");
+        var img;
         for (var i = 0; i < this.espai.length; i++) {
-            document.write(this.espai[i] + "<br>");
+            for (var j = 0; j < this.espai[i].length; j++) {
+                if (this.espai[i][j] === 0) {
+                    img = document.getElementById("blanc");
+                }
+                if (this.espai[i][j] === "i") {
+                    img = document.getElementById("blau");
+                }
+                if (this.espai[i][j] === "j") {
+                    img = document.getElementById("rosa");
+                }
+                if (this.espai[i][j] === "l") {
+                    img = document.getElementById("taronja");
+                }
+                if (this.espai[i][j] === "o") {
+                    img = document.getElementById("lila");
+                }
+                if (this.espai[i][j] === "s") {
+                    img = document.getElementById("vermell");
+                }
+                if (this.espai[i][j] === "t") {
+                    img = document.getElementById("verd");
+                }
+                if (this.espai[i][j] === "z") {
+                    img = document.getElementById("groc");
+                }
+                context.drawImage(img, j * 16, i * 16, 15, 15);
+            }
         }
     },
+    
     //Funció encarregada de calcular quina serà la següent peça en caure
     calcPesaSeg: function () {
         this.pesaSeguent = GeneraPesaAleatoria();
     },
+    
     //Funció encarregada de la gestió de la interacció de teclat de l'usuari
     teclaClic: function () {
         //onKeyDown -> executa mètodes "moure" de Pesa
     },
+    
     //Funció que realitza el moviment automàtic del joc cada cert interval de temps
     movimentAutomaticJoc: function () {
-        //setInterval
-        console.log(this.pesaVigent);
-        //console.log("Posició inicial Y :" + this.pesaVigent);
-        if ((this.pesaVigent.y >= 0) && (this.pesaVigent.y < 25)) {
-            this.pesaVigent.y += 1;
-        }
-        //console.log("Posició Y:" + this.pesaVigent.y);
-        
-        if(this.pesaVigent.y === 24){ //  ||la y seguent coincideix amb una pesa
-            //Parar pesa i que surti la seguent
-            this.pesaVigent = this.pesaVigent;
-            this.calcPesaSeg();
-        }
+        var interval = setInterval(function () {
+            console.log(Joc.pesaVigent);
+            if ((Joc.pesaVigent.y >= 0) && (Joc.pesaVigent.y < 25) && (Joc.espai[Joc.pesaVigent.y + 1][Joc.pesaVigent.x] !== 1)) {
+                Joc.pesaVigent.y += 1;
+            }else{
+                clearInterval(interval);
+            }
+
+            if ((Joc.pesaVigent.y === 24) || (Joc.espai[Joc.pesaVigent.y + 1][Joc.pesaVigent.x] === 1)) {
+                //Fer desapareixer pesa
+                //clearInterval(interval);
+                Joc.pesaVigent = Joc.pesaSeguent;
+                Joc.calcPesaSeg();
+            }
+
+        }, Joc.interval);
     }
 };
 
@@ -61,7 +97,6 @@ var Pesa = function (forma, color, x, y) {
     this.color = color;
     this.x = x;
     this.y = y;
-
     this.rotarDreta = function () {
         var formaNova = new Array();
         for (var i = 0; i < this.forma.length; i++) {
@@ -72,14 +107,12 @@ var Pesa = function (forma, color, x, y) {
         }
         this.forma = formaNova;
     };
-
     //Per rotar cap a l'esquerra, s'executa 3 cops el mètode per rotar cap a la dreta.
     this.rotarEsquerra = function () {
         for (var i = 0; i < 3; i++) {
             this.rotarDreta();
         }
     };
-
     //Mètode per disminuir la posició x de la peça (moure la peça cap a la esquerra).
     //Si en disminuir la posició, no sobrepassa el límit de la matriu, es mourà.
     this.moureEsquerra = function () {
@@ -87,7 +120,6 @@ var Pesa = function (forma, color, x, y) {
             this.x -= 1;
         }
     };
-
     //Mètode per augmentar la posició x de la peça (moure la peça cap a la dreta).
     //Si en augmentar la posició, no sobrepassa el límit de la matriu, es mourà.
     this.moureDreta = function () {
@@ -95,7 +127,6 @@ var Pesa = function (forma, color, x, y) {
             this.x += 1;
         }
     };
-
     this.getForma = function () {
         return this.forma;
     };
@@ -116,12 +147,7 @@ function GeneraPesaAleatoria() {
     //return peces[numeroAleatori];
 }
 
-//Joc
-Joc.iniJoc();
-console.log(Joc.pesaVigent);
-//setInterval(Joc.movimentAutomaticJoc, Joc.interval);
-
-//document.getElementById("mapa").innerHTML = Joc.mostraEspai();
-/*document.getElementById("mapa").innerHTML = ("<br>Puntuació: " + 
-        Joc.puntJugador + "<br>Puntuació Màxima: " + Joc.puntMaxJugador +
-        "<br>Nivell: " + Joc.nivell);*/
+window.onload = function () {
+    Joc.iniJoc();
+    Joc.movimentAutomaticJoc();
+};
