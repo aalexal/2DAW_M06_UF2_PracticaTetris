@@ -5,7 +5,7 @@ var Joc = {
     pesaVigent: [],
     pesaSeguent: [],
     comptadorPeces: [i = 0, j = 0, l = 0, o = 0, s = 0, t = 0, z = 0],
-    interval: 100,
+    interval: 1000,
     nivell: 0,
     espai: new Array(),
     //Funció que inicialitza el joc
@@ -17,7 +17,6 @@ var Joc = {
         }
         this.pesaVigent = GeneraPesaAleatoria();
         this.calcPesaSeg();
-        this.mostraEspai();
         this.mostraPuntuacions();
     },
     mostraPuntuacions: function () {
@@ -45,7 +44,7 @@ var Joc = {
                     img = document.getElementById("taronja");
                 }
                 if (this.espai[i][j] === "o") {
-                    img = document.getElementById("lila");
+                    img = document.getElementById("groc");
                 }
                 if (this.espai[i][j] === "s") {
                     img = document.getElementById("vermell");
@@ -54,36 +53,36 @@ var Joc = {
                     img = document.getElementById("verd");
                 }
                 if (this.espai[i][j] === "z") {
-                    img = document.getElementById("groc");
+                    img = document.getElementById("lila");
                 }
                 context.drawImage(img, j * 16, i * 16, 15, 15);
             }
         }
     },
-    
+
     //Funció encarregada de calcular quina serà la següent peça en caure
     calcPesaSeg: function () {
         this.pesaSeguent = GeneraPesaAleatoria();
     },
-    
+
     //Funció encarregada de la gestió de la interacció de teclat de l'usuari
     teclaClic: function () {
         //onKeyDown -> executa mètodes "moure" de Pesa
     },
-    
+
     //Funció que realitza el moviment automàtic del joc cada cert interval de temps
     movimentAutomaticJoc: function () {
         var interval = setInterval(function () {
             console.log(Joc.pesaVigent);
             if ((Joc.pesaVigent.y >= 0) && (Joc.pesaVigent.y < 25) && (Joc.espai[Joc.pesaVigent.y + 1][Joc.pesaVigent.x] !== 1)) {
                 Joc.pesaVigent.y += 1;
-            }else{
+            } else {
                 clearInterval(interval);
+                Joc.puntJugador += 10;
             }
 
             if ((Joc.pesaVigent.y === 24) || (Joc.espai[Joc.pesaVigent.y + 1][Joc.pesaVigent.x] === 1)) {
-                //Fer desapareixer pesa
-                //clearInterval(interval);
+                //Crear pesa seguent
                 Joc.pesaVigent = Joc.pesaSeguent;
                 Joc.calcPesaSeg();
             }
@@ -130,17 +129,47 @@ var Pesa = function (forma, color, x, y) {
     this.getForma = function () {
         return this.forma;
     };
+    this.pintar = function () {
+        var resultat = "<table border='1'>";
+        
+        for (var i = 0; i < this.forma.length; i++)
+        {
+            resultat = resultat + "<tr>";
+            for (var j = 0; j < this.forma[i].length; j++)
+            {
+                resultat = resultat + "<td>";
+                if (this.forma[i][j] === 1) {
+                    switch(this.color){
+                        case "groc": Joc.espai[i][j] = "o";break;
+                        case "blau": Joc.espai[i][j] = "i";break;
+                        case "vermell": Joc.espai[i][j] = "s";break;
+                        case "lila": Joc.espai[i][j] = "z";break;
+                        case "taronja": Joc.espai[i][j] = "l";break;
+                        case "rosa": Joc.espai[i][j] = "j";break;
+                        case "verd": Joc.espai[i][j] = "t";break;
+                    }
+                } else {
+                    resultat = resultat + "0";
+                }
+                ;
+                resultat = resultat + "</td>";
+            }
+            resultat = resultat + "</tr>";
+        }
+        resultat = resultat + "</table>";
+        Joc.mostraEspai();
+    };
 };
 
 function GeneraPesaAleatoria() {
     var peces = [
         [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "groc"],
-        [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], "lila"],
-        [[[0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 0, 0]], "verd"],
-        [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]], "roig"],
-        [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "blau"],
-        [[[0, 1, 1, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "taronja"],
-        [[[0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "morat"]
+        [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], "blau"],
+        [[[0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 0, 0]], "vermell"],
+        [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]], "lila"],
+        [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "taronja"],
+        [[[0, 1, 1, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "rosa"],
+        [[[0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "verd"]
     ];
     var numeroAleatori = Math.round(Math.random() * 6);
     return new Pesa(peces[numeroAleatori][0], peces[numeroAleatori][1], 4, 0);
@@ -149,5 +178,6 @@ function GeneraPesaAleatoria() {
 
 window.onload = function () {
     Joc.iniJoc();
+    var probaPesa = Joc.pesaVigent.pintar();
     Joc.movimentAutomaticJoc();
 };
